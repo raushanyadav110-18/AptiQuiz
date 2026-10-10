@@ -410,42 +410,125 @@
 
   <script>
     const demoQuestions = [
-      {
-        topic: "CMOS",
-        question: "Which MOSFET type is commonly used to pull the output HIGH in a CMOS inverter?",
-        options: ["NMOS", "PMOS", "BJT", "JFET"],
-        answer: 1
-      },
-      {
-        topic: "Verilog HDL",
-        question: "Which keyword declares a module in Verilog HDL?",
-        options: ["class", "function", "module", "entity"],
-        answer: 2
-      },
-      {
-        topic: "Digital Electronics",
-        question: "What is the output of an AND gate when both inputs are 1?",
-        options: ["0", "1", "Z", "X"],
-        answer: 1
-      },
-      {
-        topic: "VLSI Technology",
-        question: "What does lithography help define during IC fabrication?",
-        options: ["Chip patterns", "Clock frequency", "Source code", "Supply voltage"],
-        answer: 0
-      },
-      {
-        topic: "ADSPC",
-        question: "What does DFT commonly stand for in digital signal processing?",
-        options: [
-          "Digital Fourier Transform",
-          "Discrete Fourier Transform",
-          "Direct Frequency Control",
-          "Discrete Filter Circuit"
-        ],
-        answer: 1
-      }
-    ];
+  // CMOS
+  {topic:"CMOS",question:"Which MOSFET pulls a CMOS inverter output HIGH?",options:["NMOS","PMOS","BJT","JFET"],answer:1},
+  {topic:"CMOS",question:"When the CMOS inverter input is HIGH, which transistor normally conducts?",options:["PMOS","NMOS","Both OFF","Neither"],answer:1},
+  {topic:"CMOS",question:"What is the main advantage of CMOS logic?",options:["High static power","Low static power","No transistors","No supply voltage"],answer:1},
+  {topic:"CMOS",question:"In a CMOS inverter, PMOS is connected toward which supply?",options:["Ground","VDD","Floating node","Clock only"],answer:1},
+  {topic:"CMOS",question:"Which MOSFET network forms the pull-down network in a CMOS gate?",options:["PMOS","NMOS","BJT","Diode only"],answer:1},
+
+  // ADSPC
+  {topic:"ADSPC",question:"What does DFT stand for?",options:["Digital Filter Theory","Discrete Fourier Transform","Direct Frequency Timing","Data Flow Transfer"],answer:1},
+  {topic:"ADSPC",question:"Which transform converts a discrete-time signal into its frequency representation?",options:["DFT","Integration only","Laplace inverse only","Differentiation"],answer:0},
+  {topic:"ADSPC",question:"What is the main purpose of an FIR filter?",options:["Filter a signal","Store files","Compile code","Generate graphics"],answer:0},
+  {topic:"ADSPC",question:"What does FFT provide?",options:["Fast computation of DFT","A new type of transistor","Memory allocation","Voltage regulation"],answer:0},
+  {topic:"ADSPC",question:"Circular convolution of two finite sequences is commonly computed using which operation?",options:["DFT multiplication and IDFT","Only addition","Only differentiation","Matrix inversion only"],answer:0},
+
+  // VLSI Technology
+  {topic:"VLSI Technology",question:"What is photolithography used for in IC fabrication?",options:["Define patterns","Write software","Cool the chip","Measure program size"],answer:0},
+  {topic:"VLSI Technology",question:"Which process grows silicon dioxide on silicon?",options:["Oxidation","Etching","Packaging","Dicing"],answer:0},
+  {topic:"VLSI Technology",question:"What is etching used to do?",options:["Remove selected material","Add source code","Increase clock speed directly","Test software"],answer:0},
+  {topic:"VLSI Technology",question:"What is wafer dicing?",options:["Separating dies from a wafer","Growing oxide","Writing HDL","Routing signals"],answer:0},
+  {topic:"VLSI Technology",question:"What is doping used for in semiconductor fabrication?",options:["Control semiconductor conductivity","Create a user interface","Store source files","Clean a PCB"],answer:0},
+
+  // Verilog HDL
+  {topic:"Verilog HDL",question:"Which keyword declares a Verilog module?",options:["class","module","package","entity"],answer:1},
+  {topic:"Verilog HDL",question:"Which symbol ends a Verilog statement?",options:[":",";","?",","],answer:1},
+  {topic:"Verilog HDL",question:"Which operator represents bitwise AND in Verilog?",options:["|","&","~","^"],answer:1},
+  {topic:"Verilog HDL",question:"Which keyword describes a combinational procedural block?",options:["always_comb","package","include","endmodule"],answer:0},
+  {topic:"Verilog HDL",question:"Which keyword closes a module?",options:["end","endmodule","endcase","finish"],answer:1},
+
+  // Embedded Computing Principles
+  {topic:"Embedded Computing Principles",question:"What is an embedded system designed to do?",options:["Perform a dedicated function","Replace every computer","Only browse websites","Only edit videos"],answer:0},
+  {topic:"Embedded Computing Principles",question:"Which component executes program instructions?",options:["Processor","Resistor only","Connector","Heat sink"],answer:0},
+  {topic:"Embedded Computing Principles",question:"What does GPIO stand for?",options:["General-Purpose Input/Output","Global Program Internet Operation","General Processor Internal Order","Graphical Port Input Option"],answer:0},
+  {topic:"Embedded Computing Principles",question:"Which device commonly measures physical conditions?",options:["Sensor","Compiler","Text editor","Linker"],answer:0},
+  {topic:"Embedded Computing Principles",question:"What is firmware?",options:["Software stored in a device","A type of wire","A cooling fan","A display connector"],answer:0},
+
+  // AI and Cyber Ethics
+  {topic:"AI and Cyber Ethics",question:"What is a key concern when collecting personal data for AI?",options:["Privacy","Screen brightness","Keyboard layout","File extension"],answer:0},
+  {topic:"AI and Cyber Ethics",question:"What can biased training data cause?",options:["Unfair predictions","Guaranteed fairness","Zero storage use","Faster charging"],answer:0},
+  {topic:"AI and Cyber Ethics",question:"What is phishing?",options:["A deceptive attempt to steal information","A sorting algorithm","A backup method","A graphics format"],answer:0},
+  {topic:"AI and Cyber Ethics",question:"Why should AI decisions be explainable where appropriate?",options:["To improve accountability","To hide all decisions","To remove testing","To prevent documentation"],answer:0},
+  {topic:"AI and Cyber Ethics",question:"Which practice improves account security?",options:["Using unique strong passwords","Sharing passwords publicly","Disabling all updates","Opening every attachment"],answer:0},
+
+  // MATLAB
+  {topic:"MATLAB",question:"Which symbol starts a comment in MATLAB?",options:["#","%","//","@"],answer:1},
+  {topic:"MATLAB",question:"Which function creates a row vector from 1 to 5?",options:["1:5","range(1,5)","vector(5)","row[1,5]"],answer:0},
+  {topic:"MATLAB",question:"Which command clears variables from the workspace?",options:["clear","clc","close","plot"],answer:0},
+  {topic:"MATLAB",question:"Which function plots y against x?",options:["plot(x,y)","draw(x,y)","graph.clear()","showline"],answer:0},
+  {topic:"MATLAB",question:"What does `size(A)` return?",options:["Dimensions of A","Only its maximum value","Its file name","Its plot color"],answer:0},
+
+  // Cadence
+  {topic:"Cadence",question:"Cadence Virtuoso is commonly used for what?",options:["IC design and custom layout","Video editing","Word processing","Web browsing"],answer:0},
+  {topic:"Cadence",question:"What does schematic capture represent?",options:["Circuit connectivity","A chip photograph only","A website layout","A program's output text"],answer:0},
+  {topic:"Cadence",question:"What is DRC in IC layout?",options:["Design Rule Check","Digital Register Code","Data Routing Clock","Device Reset Control"],answer:0},
+  {topic:"Cadence",question:"What is LVS used to compare?",options:["Layout and schematic connectivity","Two documents","Two web pages","Two source-code comments"],answer:0},
+  {topic:"Cadence",question:"What is a SPICE simulation commonly used for?",options:["Analyzing circuit behavior","Creating slides","Managing emails","Editing images"],answer:0},
+
+  // Vivado
+  {topic:"Vivado",question:"AMD Vivado is primarily used for designing with which devices?",options:["FPGAs","Mechanical gears","Printers only","Audio speakers"],answer:0},
+  {topic:"Vivado",question:"What is synthesis in an FPGA design flow?",options:["Converting RTL into a logic implementation","Writing a report only","Printing a PCB","Measuring room temperature"],answer:0},
+  {topic:"Vivado",question:"What is an XDC file commonly used for?",options:["Design constraints","Image storage","Audio playback","Database backups"],answer:0},
+  {topic:"Vivado",question:"What does implementation include in an FPGA flow?",options:["Placement and routing","Only typing source code","Only writing comments","Only opening a project"],answer:0},
+  {topic:"Vivado",question:"Why is a testbench used?",options:["To simulate and verify a design","To manufacture silicon","To increase monitor size","To format a disk"],answer:0},
+
+  // Digital Electronics
+  {topic:"Digital Electronics",question:"What is the output of an AND gate when both inputs are 1?",options:["0","1","X only","Z only"],answer:1},
+  {topic:"Digital Electronics",question:"Which gate produces the complement of an OR operation?",options:["NOR","NAND","XOR","AND"],answer:0},
+  {topic:"Digital Electronics",question:"How many bits can a basic flip-flop store?",options:["1","2","4","8"],answer:0},
+  {topic:"Digital Electronics",question:"What is the binary representation of decimal 5?",options:["101","110","111","100"],answer:0},
+  {topic:"Digital Electronics",question:"Which circuit adds two binary bits and a carry input?",options:["Full adder","Decoder","Multiplexer","Comparator only"],answer:0},
+
+  // Signals and Systems
+  {topic:"Signals and Systems",question:"What is the unit impulse sequence denoted by?",options:["δ[n]","u[n] only","r[n] only","x²"],answer:0},
+  {topic:"Signals and Systems",question:"A system is time-invariant if a time shift at the input causes what?",options:["The same shift at the output","Always zero output","A random output","No output ever"],answer:0},
+  {topic:"Signals and Systems",question:"What does convolution help determine for an LTI system?",options:["Output from input and impulse response","Source-code syntax","Chip area directly","Battery capacity"],answer:0},
+  {topic:"Signals and Systems",question:"Which transform is commonly used to analyze signal frequency content?",options:["Fourier transform","Only sorting","Only encryption","Only compilation"],answer:0},
+  {topic:"Signals and Systems",question:"A periodic signal repeats after what?",options:["A fixed period","Every random interval","Only once","No interval"],answer:0},
+
+  // Microprocessors
+  {topic:"Microprocessors",question:"How wide is the 8086 data bus?",options:["8-bit","16-bit","20-bit","32-bit"],answer:1},
+  {topic:"Microprocessors",question:"How wide is the 8086 address bus?",options:["8-bit","16-bit","20-bit","32-bit"],answer:2},
+  {topic:"Microprocessors",question:"What is the maximum addressable memory of the 8086 in its standard mode?",options:["64 KB","256 KB","1 MB","4 GB"],answer:2},
+  {topic:"Microprocessors",question:"Which register points to the next instruction in the 8086?",options:["IP","SP only","AX only","DX only"],answer:0},
+  {topic:"Microprocessors",question:"Which unit performs arithmetic and logical operations?",options:["ALU","Clock crystal only","Address decoder only","Keyboard controller"],answer:0},
+
+  // Python Programming
+  {topic:"Python Programming",question:"Which keyword defines a function in Python?",options:["func","def","function","make"],answer:1},
+  {topic:"Python Programming",question:"Which Python type is mutable?",options:["tuple","str","list","int"],answer:2},
+  {topic:"Python Programming",question:"Which operator tests equality in Python?",options:["=","==",":=","!="],answer:1},
+  {topic:"Python Programming",question:"Which method initializes a typical Python object?",options:["__init__","__start__","constructor()","init_object"],answer:0},
+  {topic:"Python Programming",question:"Which structure stores key-value pairs?",options:["list","tuple","dictionary","string"],answer:2},
+
+  // C Programming
+  {topic:"C Programming",question:"Which function is the usual entry point of a C program?",options:["start()","main()","run()","init()"],answer:1},
+  {topic:"C Programming",question:"Which format specifier is commonly used for an int in printf?",options:["%d","%s","%c","%f"],answer:0},
+  {topic:"C Programming",question:"Which symbol terminates a C statement?",options:[":",";","?",","],answer:1},
+  {topic:"C Programming",question:"Which loop checks its condition before each iteration?",options:["while","do-while only after the body","switch","goto"],answer:0},
+  {topic:"C Programming",question:"Which operator obtains the address of a variable?",options:["*","&","%","#"],answer:1},
+
+  // Quantitative Aptitude
+  {topic:"Quantitative Aptitude",question:"What is 20% of 150?",options:["20","25","30","35"],answer:2},
+  {topic:"Quantitative Aptitude",question:"If a ratio is 2:3 and the total is 25, what is the first share?",options:["5","10","12","15"],answer:1},
+  {topic:"Quantitative Aptitude",question:"What is the average of 4, 6 and 8?",options:["5","6","7","8"],answer:1},
+  {topic:"Quantitative Aptitude",question:"A ₹500 item has a 10% discount. What is the sale price?",options:["₹400","₹450","₹475","₹490"],answer:1},
+  {topic:"Quantitative Aptitude",question:"What is 12 × 8?",options:["84","92","96","108"],answer:2},
+
+  // Logical Reasoning
+  {topic:"Logical Reasoning",question:"Find the next number: 2, 4, 6, 8, ...",options:["9","10","11","12"],answer:1},
+  {topic:"Logical Reasoning",question:"All roses are flowers. Which statement must be true?",options:["Every flower is a rose","Every rose is a flower","No rose is a flower","All flowers are red"],answer:1},
+  {topic:"Logical Reasoning",question:"Find the odd one out.",options:["Square","Triangle","Circle","Carrot"],answer:3},
+  {topic:"Logical Reasoning",question:"If A is taller than B and B taller than C, who is tallest?",options:["A","B","C","Cannot determine"],answer:0},
+  {topic:"Logical Reasoning",question:"Find the next letter: A, C, E, G, ...",options:["H","I","J","K"],answer:1},
+
+  // Verbal Ability
+  {topic:"Verbal Ability",question:"Choose the synonym of 'rapid'.",options:["Slow","Quick","Weak","Late"],answer:1},
+  {topic:"Verbal Ability",question:"Choose the antonym of 'ancient'.",options:["Old","Historic","Modern","Past"],answer:2},
+  {topic:"Verbal Ability",question:"Choose the grammatically correct sentence.",options:["She go to class.","She goes to class.","She going class.","She gone to class."],answer:1},
+  {topic:"Verbal Ability",question:"What is the plural of 'analysis'?",options:["Analysises","Analyses","Analysis","Analys"],answer:1},
+  {topic:"Verbal Ability",question:"Fill in the blank: He is interested ___ electronics.",options:["on","at","in","for"],answer:2}
+];
 
     const params = new URLSearchParams(window.location.search);
     let settings = {};
@@ -467,25 +550,27 @@
       sessionStorage.getItem("aptiQuizTopic") ||
       "Mixed";
 
-    const desiredCount = Math.max(
-      1,
-      Math.min(Number(settings.questionCount) || 5, demoQuestions.length)
-    );
+    const requestedCount = Math.max(
+  1,
+  Math.min(Number(settings.questionCount) || 5, 50)
+);
 
-    const questionTime = Math.max(
-      5,
-      Math.min(Number(settings.questionTime) || 15, 120)
-    );
+const questionTime = Math.max(
+  5,
+  Math.min(Number(settings.questionTime) || 15, 120)
+);
 
-    let questions = demoQuestions.filter(q =>
-      selectedTopic === "Mixed" || q.topic === selectedTopic
-    );
+let questions = demoQuestions.filter(q =>
+  selectedTopic === "Mixed" ||
+  selectedTopic === "Mixed Subjects" ||
+  q.topic === selectedTopic
+);
 
-    if (questions.length === 0) {
-      questions = demoQuestions.slice();
-    }
+// Shuffle questions so attempts can differ.
+questions = questions.sort(() => Math.random() - 0.5);
 
-    questions = questions.slice(0, desiredCount);
+// Never show more questions than exist for the selected topic.
+questions = questions.slice(0, requestedCount);
 
     let current = 0;
     let score = 0;
