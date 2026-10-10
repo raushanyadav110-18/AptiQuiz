@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090a08">
+  <title>Leaderboard | AptiQuiz</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090a08;
+      --surface: #12140f;
+      --border: #30352a;
+      --text: #f5f5ef;
+      --muted: #9b9f90;
+      --lime: #c2ff6b;
+      --gold: #ffd979;
+      --silver: #d8e0e7;
+      --bronze: #e6a779;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(#080a08e8, #080a08f0),
+        url("assets/arena-bg.png") center / cover fixed no-repeat,
+        var(--bg);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    button, a { font: inherit; }
+
+    .topbar {
+      min-height: 72px;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      border-bottom: 1px solid #ffffff17;
+      background: #080a08b8;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      color: white;
+      text-decoration: none;
+      font: 700 25px "Space Grotesk", sans-serif;
+      letter-spacing: -1.5px;
+    }
+
+    .brand span { color: var(--lime); }
+
+    .live {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 12px var(--lime);
+    }
+
+    .container {
+      width: min(1000px, 92%);
+      margin: 38px auto 60px;
+    }
+
+    .back {
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .back:hover { color: var(--lime); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin-top: 25px;
+      padding: clamp(28px, 5vw, 52px);
+      border: 1px solid #454b37;
+      border-radius: 5px;
+      background: linear-gradient(120deg, #151a10f5, #0b0d0bf2);
+      box-shadow: 0 25px 80px #0008;
+    }
+
+    .eyebrow {
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    h1 {
+      margin: 17px 0 12px;
+      font: 700 clamp(39px, 7vw, 67px)/1 "Space Grotesk", sans-serif;
+      letter-spacing: -3px;
+    }
+
+    h1 span { color: var(--lime); }
+
+    .subtitle {
+      color: #a6ab9b;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 17px;
+      border: 1px solid #ffffff14;
+      background: #00000026;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      margin-top: 9px;
+      color: var(--lime);
+      font: 700 clamp(21px, 4vw, 30px) "Space Grotesk", sans-serif;
+      overflow-wrap: anywhere;
+    }
+
+    .board {
+      margin-top: 20px;
+      padding: clamp(18px, 4vw, 30px);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: #0c0e0bf5;
+    }
+
+    .board-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .board-heading h2 {
+      margin: 0 0 7px;
+      font: 600 21px "Space Grotesk", sans-serif;
+    }
+
+    .board-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .demo-badge {
+      padding: 9px 11px;
+      border: 1px solid #c2ff6635;
+      color: var(--lime);
+      background: #c2ff660b;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    thead th {
+      padding: 14px 12px;
+      color: #929787;
+      border-bottom: 1px solid #ffffff1a;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    tbody td {
+      padding: 17px 12px;
+      border-bottom: 1px solid #ffffff0e;
+      font-size: 12px;
+    }
+
+    tbody tr:last-child td { border-bottom: 0; }
+
+    tbody tr:hover { background: #c2ff6607; }
+
+    .rank {
+      font: 700 17px "Space Grotesk", sans-serif;
+      color: var(--muted);
+    }
+
+    .rank.gold { color: var(--gold); }
+    .rank.silver { color: var(--silver); }
+    .rank.bronze { color: var(--bronze); }
+
+    .name-cell {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 700;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border: 1px solid #c2ff663b;
+      background: #202719;
+      color: var(--lime);
+      font-weight: 800;
+    }
+
+    .score {
+      color: var(--lime);
+      font-weight: 800;
+    }
+
+    .your-row { background: #c2ff6609; }
+
+    .your-tag {
+      margin-left: 7px;
+      padding: 4px 6px;
+      color: var(--lime);
+      background: #c2ff6612;
+      font-size: 8px;
+      letter-spacing: .5px;
+    }
+
+    .empty {
+      padding: 26px 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .primary, .secondary {
+      min-height: 47px;
+      padding: 13px 19px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .primary {
+      border: 1px solid var(--lime);
+      background: var(--lime);
+      color: #10120b;
+    }
+
+    .primary:hover { background: #d5ffa2; }
+
+    .secondary {
+      border: 1px solid #414637;
+      background: transparent;
+      color: white;
+    }
+
+    .secondary:hover { border-color: var(--lime); }
+
+    .footnote {
+      margin-top: 18px;
+      color: #858a7b;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 600px) {
+      .summary { grid-template-columns: 1fr; }
+      .stat { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      .stat-value { margin-top: 0; }
+      h1 { letter-spacing: -1.5px; }
+      .board-heading { align-items: flex-start; flex-direction: column; }
+      .actions { flex-direction: column; }
+      .actions a, .actions button { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">Apti<span>Quiz</span></a>
+    <div class="live"><span class="dot"></span> RESULTS</div>
+  </header>
+
+  <main class="container">
+    <a class="back" href="index.html">← Back to homepage</a>
+
+    <section class="hero">
+      <div class="eyebrow">CHALLENGE COMPLETE / RESULTS</div>
+      <h1>Know your <span>rank.</span></h1>
+      <p class="subtitle" id="resultSubtitle">
+        Your performance summary is ready. Keep learning, keep improving.
+      </p>
+
+      <div class="summary">
+        <div class="stat">
+          <div class="stat-label">Your score</div>
+          <div class="stat-value" id="summaryScore">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Correct answers</div>
+          <div class="stat-value" id="summaryCorrect">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Time taken</div>
+          <div class="stat-value" id="summaryTime">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="board">
+      <div class="board-heading">
+        <div>
+          <h2>Leaderboard</h2>
+          <p>Performance overview</p>
+        </div>
+        <div class="demo-badge">LOCAL DEMO RESULTS</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Score</th>
+              <th>Correct</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+
+      <p class="empty" id="emptyMessage" hidden>
+        No results are available yet. Complete a practice quiz to see your result.
+      </p>
+
+      <div class="actions">
+        <a class="primary" href="multiplayer-quiz.html">Play Again ↗</a>
+        <a class="secondary" href="index.html">Back to Home</a>
+      </div>
+
+      <p class="footnote">
+        Demo mode: this page displays the current browser's saved result.
+        It does not yet show other players or live multiplayer rankings.
+        Official rankings must be supplied by the connected backend.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const score = Number(sessionStorage.getItem("aptiDemoScore"));
+    const correct = Number(sessionStorage.getItem("aptiDemoCorrect"));
+    const total = Number(sessionStorage.getItem("aptiDemoTotal"));
+    const time = Number(sessionStorage.getItem("aptiDemoTime"));
+    const player = sessionStorage.getItem("aptiDemoPlayer") || "Guest";
+
+    const body = document.getElementById("leaderboardBody");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    const hasResult =
+      sessionStorage.getItem("aptiDemoScore") !== null &&
+      Number.isFinite(score) &&
+      Number.isFinite(total) &&
+      total > 0;
+
+    if (!hasResult) {
+      document.getElementById("summaryScore").textContent = "—";
+      document.getElementById("summaryCorrect").textContent = "—";
+      document.getElementById("summaryTime").textContent = "—";
+      document.getElementById("resultSubtitle").textContent =
+        "Complete the quiz to see your performance summary.";
+
+      emptyMessage.hidden = false;
+    } else {
+      document.getElementById("summaryScore").textContent =
+        `${score} / ${total}`;
+
+      document.getElementById("summaryCorrect").textContent =
+        `${correct} / ${total}`;
+
+      document.getElementById("summaryTime").textContent =
+        `${Number.isFinite(time) ? time : 0}s`;
+
+      document.getElementById("resultSubtitle").textContent =
+        `Well played, ${player}. Here is your quiz performance.`;
+
+      const row = document.createElement("tr");
+      row.className = "your-row";
+
+      const rankCell = document.createElement("td");
+      const rank = document.createElement("span");
+      rank.className = "rank gold";
+      rank.textContent = "—";
+      rank.title = "Your rank will be assigned by the multiplayer backend";
+      rankCell.appendChild(rank);
+
+      const nameCell = document.createElement("td");
+      const nameWrap = document.createElement("div");
+      nameWrap.className = "name-cell";
+
+      const avatar = document.createElement("span");
+      avatar.className = "avatar";
+      avatar.textContent = player.trim().charAt(0).toUpperCase() || "G";
+
+      const name = document.createElement("span");
+      name.textContent = player;
+
+      const tag = document.createElement("span");
+      tag.className = "your-tag";
+      tag.textContent = "YOU";
+
+      nameWrap.append(avatar, name, tag);
+      nameCell.appendChild(nameWrap);
+
+      const scoreCell = document.createElement("td");
+      scoreCell.className = "score";
+      scoreCell.textContent = `${score}/${total}`;
+
+      const correctCell = document.createElement("td");
+      correctCell.textContent = `${correct}/${total}`;
+
+      const timeCell = document.createElement("td");
+      timeCell.textContent = `${Number.isFinite(time) ? time : 0}s`;
+
+      row.append(
+        rankCell,
+        nameCell,
+        scoreCell,
+        correctCell,
+        timeCell
+      );
+
+      body.appendChild(row);
+    }
+  </script>
+</body>
+</html>
