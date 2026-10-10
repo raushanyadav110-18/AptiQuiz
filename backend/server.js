@@ -51,14 +51,47 @@ app.get("/api/firebase-test", async (req, res) => {
 // Start server
 
  // Create a new quiz room
+
+ // Create a new quiz room
 app.post("/api/rooms", async (req, res) => {
   try {
-    const { hostName } = req.body;
+    const {
+      hostName,
+      quizTitle,
+      topic,
+      questionCount,
+      questionTime
+    } = req.body;
 
-    if (!hostName || !hostName.trim()) {
+    if (typeof hostName !== "string" || !hostName.trim()) {
       return res.status(400).json({
         success: false,
         message: "Host name is required",
+      });
+    }
+
+    if (
+      typeof quizTitle !== "string" ||
+      !quizTitle.trim() ||
+      typeof topic !== "string" ||
+      !topic.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Quiz title and topic are required",
+      });
+    }
+
+    const count = Number(questionCount);
+    const time = Number(questionTime);
+
+    if (
+      !Number.isInteger(count) || count < 1 || count > 50 ||
+      !Number.isInteger(time) || time < 5 || time > 120
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid question count or question time",
       });
     }
 
@@ -66,7 +99,6 @@ app.post("/api/rooms", async (req, res) => {
     let roomRef;
     let exists = true;
 
-    // Generate a unique 6-character room code
     while (exists) {
       roomCode = Math.random()
         .toString(36)
@@ -78,10 +110,13 @@ app.post("/api/rooms", async (req, res) => {
       exists = snapshot.exists();
     }
 
-    // Save room in Firebase
     await roomRef.set({
       roomCode,
       hostName: hostName.trim(),
+      quizTitle: quizTitle.trim(),
+      topic: topic.trim(),
+      questionCount: count,
+      questionTime: time,
       status: "waiting",
       players: {},
       createdAt: Date.now(),
@@ -101,6 +136,7 @@ app.post("/api/rooms", async (req, res) => {
     });
   }
 });
+
 
 
 app.post("/api/rooms/:roomCode/join", async (req, res) => {
