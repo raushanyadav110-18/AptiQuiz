@@ -1,0 +1,88 @@
+`create-room.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Room | AptiQuiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a href="index.html" class="logo">Apti<span>Quiz</span></a>
+    <div class="nav-tag">HOST A QUIZ</div>
+  </header>
+
+  <main class="hero">
+    <div class="pill">🎮 MULTIPLAYER ARENA</div>
+    <h1>Create Your <span>Quiz Room.</span></h1>
+    <p class="subtitle">
+      Set up your quiz and get ready to challenge your friends.
+    </p>
+
+    <section class="panel">
+      <form id="roomForm">
+        <label for="hostName">Host Name</label>
+        <input
+          id="hostName"
+          name="hostName"
+          type="text"
+          placeholder="Enter your name"
+          maxlength="30"
+          required
+        >
+
+        <label for="quizTitle">Quiz Title</label>
+        <input
+          id="quizTitle"
+          name="quizTitle"
+          type="text"
+          placeholder="e.g. Aptitude Challenge"
+          maxlength="60"
+          required
+        >
+
+        <label for="topic">Choose Topic</label>
+        <select id="topic" name="topic" required>
+          <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+          <option value="Logical Reasoning">Logical Reasoning</option>
+          <option value="Verbal Ability">Verbal Ability</option>
+          <option value="Programming">Programming</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Mixed">Mixed Topics</option>
+        </select>
+
+        <label for="questionCount">Number of Questions</label>
+        <select id="questionCount" name="questionCount">
+          <option value="5">5 Questions</option>
+          <option value="10" selected>10 Questions</option>
+          <option value="15">15 Questions</option>
+          <option value="20">20 Questions</option>
+        </select>
+
+        <label for="questionTime">Time Per Question</label>
+        <select id="questionTime" name="questionTime">
+          <option value="10">10 Seconds</option>
+          <option value="15" selected>15 Seconds</option>
+          <option value="20">20 Seconds</option>
+          <option value="30">30 Seconds</option>
+        </select>
+
+        <button type="submit" class="submit-btn">
+          Review Quiz Settings →
+        </button>
+
+        <p id="roomMessage" role="status" aria-live="polite"></p>
+        <div id="settingsPreview" hidden></div>
+      </form>
+
+      <a href="index.html">← Back to Home</a>
+    </section>
+  </main>
+
+  <script src="create-room.js"></script>
+</body>
+</html>
+```
