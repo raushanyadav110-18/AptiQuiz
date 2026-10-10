@@ -22,17 +22,14 @@ roomForm.addEventListener("submit", function (event) {
   }
 
   const settings = {
-    hostName: hostName,
-    quizTitle: quizTitle,
-    topic: topic,
-    questionCount: questionCount,
-    questionTime: questionTime
+    hostName,
+    quizTitle,
+    topic,
+    questionCount,
+    questionTime
   };
 
-  sessionStorage.setItem(
-    "aptiRoomSettings",
-    JSON.stringify(settings)
-  );
+  sessionStorage.setItem("aptiRoomSettings", JSON.stringify(settings));
 
   roomMessage.textContent = "Quiz settings saved successfully!";
 
@@ -49,8 +46,7 @@ roomForm.addEventListener("submit", function (event) {
     "Topic: " + topic,
     "Questions: " + questionCount,
     "Time per question: " + questionTime + " seconds",
-    "Maximum quiz time: " +
-      questionCount * questionTime + " seconds"
+    "Maximum quiz time: " + questionCount * questionTime + " seconds"
   ];
 
   const list = document.createElement("ul");
@@ -62,4 +58,9 @@ roomForm.addEventListener("submit", function (event) {
   });
 
   settingsPreview.appendChild(list);
+
+  // Continue to the waiting lobby after saving the settings.
+  roomMessage.textContent = "Settings saved! Opening your lobby...";
+
+  window.location.href = "waiting-room.html";
 });
