@@ -712,9 +712,17 @@
     });
 
     startQuizBtn.addEventListener("click", function () {
-      lobbyMessage.textContent =
-        "Preview mode: connect the multiplayer backend to start a real quiz.";
+  const savedSettings = sessionStorage.getItem("aptiRoomSettings");
+
+  if (!savedSettings) {
+    lobbyMessage.textContent =
+      "Quiz settings not found. Please create the room again.";
+    return;
+  }
+
+  window.location.href = "multiplayer-quiz.html";
     });
+    
   </script>
 </body>
 </html>
