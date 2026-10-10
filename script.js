@@ -33,8 +33,11 @@ function openPanel(mode) {
   panel.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-document.getElementById("hostBtn").onclick =
-  () => openPanel("host");
+
+document.getElementById("hostBtn").onclick = () => {
+  window.location.href = "create-room.html";
+};
+
 
 document.getElementById("joinBtn").onclick =
   () => openPanel("join");
