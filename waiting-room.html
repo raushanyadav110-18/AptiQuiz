@@ -1,0 +1,720 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b09">
+  <title>AptiQuiz | Waiting Arena</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --lime: #c2ff6b;
+      --white: #f5f6f0;
+      --muted: #a4ad9d;
+      --line: #c2ff6b35;
+      --panel: rgba(5, 10, 8, .83);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+  min-height: 100vh;
+  color: #f5f5ef;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4, 8, 7, 0.78),
+      rgba(4, 8, 7, 0.48)
+    ),
+    url("assets/arena-bg.png") center center / cover fixed no-repeat;
+  font-family: "DM Sans", sans-serif;
+}
+
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .topbar {
+      min-height: 72px;
+      padding: 0 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 1px solid #c2ff6b20;
+      background: rgba(3, 7, 6, .8);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      color: var(--white);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      text-decoration: none;
+    }
+
+    .brand span {
+      color: var(--lime);
+    }
+
+    .brand-note {
+      margin-left: 15px;
+      padding-left: 15px;
+      border-left: 1px solid #ffffff30;
+      color: #a8b09f;
+      font-family: "DM Sans", sans-serif;
+      font-size: 10px;
+      letter-spacing: 1.8px;
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border: 1px solid #c2ff6b48;
+      border-radius: 3px;
+      background: #c2ff6b0b;
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 13px var(--lime);
+    }
+
+    .container {
+      width: min(1160px, 91%);
+      margin: 32px auto 65px;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 23px;
+    }
+
+    .back-link {
+      color: #d0d5c8;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      color: var(--lime);
+    }
+
+    .section-label {
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(26px, 5vw, 58px);
+  border: 1px solid #3b4130;
+  border-radius: 5px;
+  background: linear-gradient(
+    110deg,
+    rgba(7, 12, 10, 0.88),
+    rgba(7, 12, 10, 0.55)
+  );
+  backdrop-filter: blur(3px);
+  box-shadow: 0 30px 100px #0008;
+}
+
+    .hero::before {
+      content: "AQ";
+      position: absolute;
+      z-index: -1;
+      right: -5px;
+      top: -55px;
+      color: #c2ff6b0b;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(180px, 28vw, 330px);
+      font-weight: 700;
+      letter-spacing: -30px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .hero h1 {
+      margin: 22px 0 18px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(42px, 6.5vw, 74px);
+      line-height: 1;
+      letter-spacing: -3.5px;
+    }
+
+    .hero h1 span {
+      color: var(--lime);
+      text-shadow: 0 0 35px #c2ff6b24;
+    }
+
+    .hero-description {
+      max-width: 550px;
+      color: #c0c8b9;
+      font-size: 14px;
+      line-height: 1.85;
+    }
+
+    .room-code-panel {
+      margin-top: 32px;
+      padding: 20px 23px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      border: 1px solid #c2ff6b65;
+      border-radius: 4px;
+      background: rgba(3, 8, 6, .77);
+      box-shadow: inset 0 0 28px #c2ff6b07;
+    }
+
+    .field-label {
+      margin-bottom: 9px;
+      color: #b3bcaa;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .room-code {
+      color: var(--lime);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(28px, 4vw, 39px);
+      font-weight: 700;
+      letter-spacing: 9px;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 20px #c2ff6b20;
+    }
+
+    .button {
+      min-height: 47px;
+      padding: 12px 18px;
+      border: 1px solid var(--lime);
+      border-radius: 3px;
+      background: var(--lime);
+      color: #10140b;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .button:hover,
+    .start-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px #c2ff6b30;
+      background: #d7ffa2;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .8fr);
+      gap: 17px;
+      margin-top: 18px;
+    }
+
+    .card {
+  min-width: 0;
+  padding: 26px;
+  border: 1px solid rgba(194, 255, 107, 0.25);
+  border-radius: 4px;
+  background: rgba(7, 11, 9, 0.86);
+  backdrop-filter: blur(12px);
+}
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .card-header h2 {
+      margin-bottom: 6px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 19px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .count {
+      flex-shrink: 0;
+      padding: 10px 12px;
+      border: 1px solid #c2ff6b48;
+      border-radius: 3px;
+      color: var(--lime);
+      background: #c2ff6b0c;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .players {
+      display: grid;
+      gap: 9px;
+    }
+
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #ffffff13;
+      border-radius: 3px;
+      background: #ffffff06;
+      transition: .2s ease;
+    }
+
+    .player:hover {
+      border-color: #c2ff6b65;
+      background: #c2ff6b09;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border: 1px solid #c2ff6b50;
+      border-radius: 3px;
+      background: #1b2614;
+      color: var(--lime);
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+    }
+
+    .player-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .player-name {
+      font-size: 13px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .player-role {
+      margin-top: 5px;
+      color: #a2aa98;
+      font-size: 11px;
+    }
+
+    .host-tag {
+      flex-shrink: 0;
+      padding: 6px 8px;
+      border-radius: 3px;
+      background: #c2ff6b18;
+      color: var(--lime);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .joined {
+      color: var(--lime);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .demo-notice {
+      margin-top: 17px;
+      padding: 13px;
+      border: 1px solid #d5b76b45;
+      border-radius: 3px;
+      background: #d5b76b0b;
+      color: #e0cc97;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .settings {
+      display: grid;
+    }
+
+    .setting {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 17px 0;
+      border-bottom: 1px solid #ffffff15;
+      font-size: 12px;
+    }
+
+    .setting:last-child {
+      border-bottom: 0;
+    }
+
+    .setting span:first-child {
+      color: #a4ad9c;
+    }
+
+    .setting span:last-child {
+      max-width: 60%;
+      text-align: right;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .start-button {
+      width: 100%;
+      min-height: 53px;
+      margin-top: 20px;
+      border: 1px solid var(--lime);
+      border-radius: 3px;
+      background: var(--lime);
+      color: #10140b;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    #lobbyMessage {
+      margin-top: 12px;
+      color: var(--lime);
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .notice {
+      margin-top: 14px;
+      color: #a0a697;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 25px;
+      padding-top: 17px;
+      border-top: 1px solid #ffffff20;
+      color: #a0a99a;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    footer span:last-child {
+      color: var(--lime);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        background:
+  linear-gradient(
+    90deg,
+    rgba(4, 8, 7, 0.78),
+    rgba(4, 8, 7, 0.48)
+  ),
+  url("assets/arena-bg.png") center center / cover fixed no-repeat;
+      }
+
+      .topbar {
+        min-height: 65px;
+      }
+
+      .brand-note {
+        display: none;
+      }
+
+      .container {
+        margin-top: 23px;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 27px 21px;
+      }
+
+      .hero h1 {
+        font-size: clamp(40px, 10vw, 57px);
+        letter-spacing: -2px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .breadcrumbs {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .room-code-panel {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .room-code {
+        letter-spacing: 6px;
+      }
+
+      .room-code-panel .button {
+        width: 100%;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      Apti<span>Quiz</span><span class="brand-note">COMPETE / LEARN / WIN</span>
+    </a>
+
+    <div class="live-status">
+      <span class="live-dot"></span>
+      WAITING LOBBY
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="breadcrumbs">
+      <a class="back-link" href="index.html">← Back to homepage</a>
+      <div class="section-label">MULTIPLAYER / LOBBY 01</div>
+    </div>
+
+    <section class="hero">
+      <div class="eyebrow">YOUR GAME. YOUR RULES.</div>
+
+      <h1>Bring your squad.<br><span>Own the arena.</span></h1>
+
+      <p class="hero-description">
+        The room is ready. Share your code, bring your competition
+        together and prepare to prove what you know.
+      </p>
+
+      <div class="room-code-panel">
+        <div>
+          <div class="field-label">ROOM CODE / DEMO PREVIEW</div>
+          <div class="room-code" id="roomCodeDisplay">QZ4821</div>
+        </div>
+
+        <button class="button" type="button" id="copyCodeBtn">
+          ▣ &nbsp; Copy room code
+        </button>
+      </div>
+    </section>
+
+    <div class="dashboard">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2>Players in the lobby</h2>
+            <p class="muted">Your competition starts here.</p>
+          </div>
+          <div class="count"><span id="playerCount">4</span> / 50</div>
+        </div>
+
+        <div class="players" id="playerList">
+          <div class="player">
+            <div class="avatar">R</div>
+            <div class="player-details">
+              <div class="player-name">Raushan</div>
+              <div class="player-role">Room host</div>
+            </div>
+            <span class="host-tag">HOST</span>
+          </div>
+
+          <div class="player">
+            <div class="avatar">A</div>
+            <div class="player-details">
+              <div class="player-name">Aman</div>
+              <div class="player-role">Player</div>
+            </div>
+            <span class="joined">● Joined</span>
+          </div>
+
+          <div class="player">
+            <div class="avatar">P</div>
+            <div class="player-details">
+              <div class="player-name">Priya</div>
+              <div class="player-role">Player</div>
+            </div>
+            <span class="joined">● Joined</span>
+          </div>
+
+          <div class="player">
+            <div class="avatar">R</div>
+            <div class="player-details">
+              <div class="player-name">Rahul</div>
+              <div class="player-role">Player</div>
+            </div>
+            <span class="joined">● Joined</span>
+          </div>
+        </div>
+
+        <div class="demo-notice">
+          PREVIEW MODE — These are sample players. Real participants
+          will appear after the multiplayer backend is connected.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2>Quiz settings</h2>
+            <p class="muted">Your upcoming challenge.</p>
+          </div>
+          <div class="count">HOST</div>
+        </div>
+
+        <div class="settings">
+          <div class="setting">
+            <span>Quiz title</span>
+            <span id="quizTitle">VLSI Challenge</span>
+          </div>
+
+          <div class="setting">
+            <span>Subject</span>
+            <span id="quizTopic">CMOS</span>
+          </div>
+
+          <div class="setting">
+            <span>Questions</span>
+            <span id="questionCount">10</span>
+          </div>
+
+          <div class="setting">
+            <span>Time / question</span>
+            <span id="questionTime">15 sec</span>
+          </div>
+        </div>
+
+        <button class="start-button" type="button" id="startQuizBtn">
+          ▶ &nbsp; Start the challenge &nbsp; →
+        </button>
+
+        <p id="lobbyMessage" role="status" aria-live="polite"></p>
+
+        <p class="notice">
+          Live room validation, player synchronization and quiz start
+          will be enabled when the backend is connected.
+        </p>
+      </section>
+    </div>
+
+    <footer>
+      <span>APTIQUIZ / MULTIPLAYER EXPERIENCE</span>
+      <span>THINK FAST. PLAY SMART.</span>
+    </footer>
+  </main>
+
+  <script>
+    const codeDisplay = document.getElementById("roomCodeDisplay");
+    const copyCodeBtn = document.getElementById("copyCodeBtn");
+    const startQuizBtn = document.getElementById("startQuizBtn");
+    const lobbyMessage = document.getElementById("lobbyMessage");
+
+    try {
+      const savedSettings = sessionStorage.getItem("aptiRoomSettings");
+
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+
+        document.getElementById("quizTitle").textContent =
+          settings.quizTitle || "VLSI Challenge";
+
+        document.getElementById("quizTopic").textContent =
+          settings.topic || "CMOS";
+
+        document.getElementById("questionCount").textContent =
+          settings.questionCount || 10;
+
+        document.getElementById("questionTime").textContent =
+          (settings.questionTime || 15) + " sec";
+
+        if (settings.hostName) {
+          const name = document.querySelector(".player-name");
+          const avatar = document.querySelector(".avatar");
+
+          if (name) name.textContent = settings.hostName;
+          if (avatar) {
+            avatar.textContent = settings.hostName.charAt(0).toUpperCase();
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Unable to load quiz settings:", error);
+    }
+
+    copyCodeBtn.addEventListener("click", async function () {
+      try {
+        await navigator.clipboard.writeText(
+          codeDisplay.textContent.trim()
+        );
+
+        copyCodeBtn.textContent = "Copied ✓";
+
+        setTimeout(function () {
+          copyCodeBtn.textContent = "▣  Copy room code";
+        }, 1800);
+      } catch {
+        lobbyMessage.textContent =
+          "Clipboard unavailable. Please copy the room code manually.";
+      }
+    });
+
+    startQuizBtn.addEventListener("click", function () {
+      lobbyMessage.textContent =
+        "Preview mode: connect the multiplayer backend to start a real quiz.";
+    });
+  </script>
+</body>
+</html>
