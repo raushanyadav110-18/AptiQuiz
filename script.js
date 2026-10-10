@@ -39,8 +39,11 @@ document.getElementById("hostBtn").onclick = () => {
 };
 
 
-document.getElementById("joinBtn").onclick =
-  () => openPanel("join");
+
+document.getElementById("joinBtn").onclick = () => {
+  window.location.href = "join-room.html";
+};
+
 
 document.getElementById("practiceBtn").onclick =
   () => openPanel("practice");
