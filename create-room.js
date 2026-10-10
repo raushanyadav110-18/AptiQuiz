@@ -1,97 +1,79 @@
 
-const joinRoomForm = document.getElementById("joinRoomForm");
-const playerNameInput = document.getElementById("playerName");
-const roomCodeInput = document.getElementById("roomCode");
-const joinMessage = document.getElementById("joinMessage");
-const joinButton = joinRoomForm.querySelector('button[type="submit"]');
+const roomForm = document.getElementById("roomForm");
+const roomMessage = document.getElementById("roomMessage");
+const settingsPreview = document.getElementById("settingsPreview");
 
-// Keep the room code uppercase while typing.
-roomCodeInput.addEventListener("input", function () {
-  roomCodeInput.value = roomCodeInput.value
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .slice(0, 6)
-    .toUpperCase();
-});
-
-joinRoomForm.addEventListener("submit", async function (event) {
+roomForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  const playerName = playerNameInput.value.trim();
-  const roomCode = roomCodeInput.value.trim().toUpperCase();
+  const hostName = document.getElementById("hostName").value.trim();
+  const quizTitle = document.getElementById("quizTitle").value.trim();
+  const topic = document.getElementById("topic").value;
+  const questionCount = Number(
+    document.getElementById("questionCount").value
+  );
+  const questionTime = Number(
+    document.getElementById("questionTime").value
+  );
 
-  if (playerName.length < 2 || playerName.length > 30) {
-    joinMessage.style.color = "#ff9baf";
-    joinMessage.textContent =
-      "Please enter a name between 2 and 30 characters.";
-    playerNameInput.focus();
+  if (!hostName || !quizTitle || !topic) {
+    roomMessage.textContent = "Please fill in all required fields.";
     return;
   }
 
-  if (!/^[A-Z0-9]{6}$/.test(roomCode)) {
-    joinMessage.style.color = "#ff9baf";
-    joinMessage.textContent =
-      "Room code must contain exactly 6 letters or numbers.";
-    roomCodeInput.focus();
-    return;
-  }
-
-  joinButton.disabled = true;
-  joinButton.textContent = "Joining room...";
-  joinMessage.style.color = "#c5baff";
-  joinMessage.textContent = "Connecting to AptiQuiz server...";
+  roomMessage.textContent = "Creating your quiz room...";
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/rooms/${encodeURIComponent(roomCode)}/join`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ playerName })
-      }
-    );
+    const response = await fetch("http://localhost:3000/api/rooms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        hostName,
+        quizTitle,
+        topic,
+        questionCount,
+        questionTime
+      })
+    });
 
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-      throw new Error(result.message || "Unable to join this room.");
+      throw new Error(result.message || "Could not create room.");
     }
 
-    // Save the confirmed backend response.
-    sessionStorage.setItem("aptiJoinPlayerName", result.playerName);
-    sessionStorage.setItem("aptiJoinRoomCode", result.roomCode);
-    sessionStorage.setItem("aptiPlayerId", result.playerId);
+    const settings = {
+      hostName,
+      quizTitle,
+      topic,
+      questionCount,
+      questionTime,
+      roomCode: result.roomCode
+    };
 
-    // Preserve these details for the next page.
-    const settings = JSON.parse(
-      sessionStorage.getItem("aptiRoomSettings") || "{}"
-    );
-    settings.roomCode = result.roomCode;
     sessionStorage.setItem("aptiRoomSettings", JSON.stringify(settings));
+    sessionStorage.setItem("aptiRoomCode", result.roomCode);
 
-    joinMessage.style.color = "#8ff0bd";
-    joinMessage.textContent =
-      `Successfully joined room ${result.roomCode}! Opening lobby...`;
+    roomMessage.textContent =
+      "Room created! Code: " + result.roomCode;
 
-    // Open the existing waiting lobby.
-    setTimeout(() => {
-      window.location.href =
-        "waiting-room.html?roomCode=" +
-        encodeURIComponent(result.roomCode);
-    }, 700);
+    if (settingsPreview) {
+      settingsPreview.hidden = false;
+      settingsPreview.textContent =
+        "Your room code is: " + result.roomCode;
+    }
+
+    window.location.href =
+      "waiting-room.html?roomCode=" +
+      encodeURIComponent(result.roomCode);
 
   } catch (error) {
-    console.error("Join room error:", error);
-
-    joinMessage.style.color = "#ff9baf";
-    joinMessage.textContent =
+    console.error("Create room error:", error);
+    roomMessage.textContent =
       error.message === "Failed to fetch"
-        ? "Cannot connect to server. Check that the backend is running."
+        ? "Cannot connect to backend. Check that the server is running."
         : error.message;
-
-  } finally {
-    joinButton.disabled = false;
-    joinButton.textContent = "Join Quiz Room  →";
   }
 });
