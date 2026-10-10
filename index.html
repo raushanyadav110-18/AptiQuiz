@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +17,8 @@
   <main class="hero">
     <div class="pill">⚡ THINK FAST. WIN BIG.</div>
 
-    <h1>Race Your Mind.<br>
+    <h1>
+      Race Your Mind.<br>
       <span>Own The Leaderboard.</span>
     </h1>
 
@@ -33,21 +34,21 @@
     </div>
 
     <section class="action-grid">
-      <button class="action-card primary" id="hostBtn">
+      <button class="action-card primary" id="hostBtn" type="button">
         <span class="action-icon">＋</span>
         <strong>Host a Quiz</strong>
         <small>Create a room and challenge others</small>
         <span class="arrow">→</span>
       </button>
 
-      <button class="action-card" id="joinBtn">
+      <button class="action-card" id="joinBtn" type="button">
         <span class="action-icon">↗</span>
         <strong>Join a Room</strong>
         <small>Enter a code to join the competition</small>
         <span class="arrow">→</span>
       </button>
 
-      <button class="action-card" id="practiceBtn">
+      <button class="action-card" id="practiceBtn" type="button">
         <span class="action-icon">◈</span>
         <strong>Quick Practice</strong>
         <small>Sharpen your skills solo</small>
@@ -61,21 +62,45 @@
 
       <form id="setupForm">
         <label for="playerName">Your name</label>
-        <input id="playerName" maxlength="20"
-          placeholder="Enter your name" required>
+        <input
+          id="playerName"
+          maxlength="20"
+          placeholder="Enter your name"
+          required
+        >
 
         <div id="roomField" hidden>
           <label for="roomCode">Room code</label>
-          <input id="roomCode" maxlength="6"
-            placeholder="Enter room code">
+          <input
+            id="roomCode"
+            maxlength="6"
+            placeholder="Enter room code"
+          >
         </div>
 
         <div id="topicField" hidden>
           <label for="topic">Quiz topic</label>
-          <select id="topic">
+
+          <select id="topic" name="topic" required>
+            <option value="" selected disabled>Select a subject</option>
+            <option value="CMOS">CMOS</option>
+            <option value="ADSPC">ADSPC</option>
+            <option value="VLSI Technology">VLSI Technology</option>
+            <option value="Verilog HDL">Verilog HDL</option>
+            <option value="Embedded Computing Principles">Embedded Computing Principles</option>
+            <option value="AI and Cyber Ethics">AI and Cyber Ethics</option>
+            <option value="MATLAB">MATLAB</option>
+            <option value="Cadence">Cadence</option>
+            <option value="Vivado">Vivado</option>
+            <option value="Digital Electronics">Digital Electronics</option>
+            <option value="Signals and Systems">Signals and Systems</option>
+            <option value="Microprocessors">Microprocessors</option>
+            <option value="Python">Python</option>
+            <option value="C">C</option>
             <option value="Quantitative Aptitude">Quantitative Aptitude</option>
             <option value="Logical Reasoning">Logical Reasoning</option>
             <option value="Verbal Ability">Verbal Ability</option>
+            <option value="Mixed">Mixed</option>
           </select>
         </div>
 
@@ -93,3 +118,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+```
