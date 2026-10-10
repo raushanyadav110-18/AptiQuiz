@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Practice | AptiQuiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a href="index.html" class="logo">Apti<span>Quiz</span></a>
+    <div class="nav-tag">QUICK PRACTICE</div>
+  </header>
+
+  <main class="hero">
+    <div class="pill">⚡ SOLO CHALLENGE</div>
+    <h1 id="quizTitle">Test Your <span>Brain.</span></h1>
+    <p class="subtitle">Answer quickly and accurately. Every second counts!</p>
+
+    <section class="panel" id="quizPanel">
+      <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:24px">
+        <strong id="progress">Question 1 / 5</strong>
+        <strong>⏱ <span id="timer">15</span>s</strong>
+      </div>
+
+      <div style="height:6px;background:#292f47;border-radius:8px;margin-bottom:24px">
+        <div id="progressBar" style="height:6px;width:20%;background:#8b7bff;border-radius:8px"></div>
+      </div>
+
+      <p id="topicLabel" style="color:#b8adff;margin-bottom:12px">Quantitative Aptitude</p>
+      <h2 id="question" style="line-height:1.5;margin-bottom:24px">Loading question...</h2>
+
+      <div id="options" style="display:grid;gap:12px"></div>
+
+      <p id="feedback" role="status" style="margin-top:16px"></p>
+
+      <button class="submit-btn" id="nextBtn" hidden>Next Question →</button>
+    </section>
+
+    <section class="panel" id="resultPanel" hidden>
+      <h2>Quiz Completed!</h2>
+      <p id="finalScore"></p>
+      <p id="finalMessage"></p>
+      <button class="submit-btn" id="restartBtn">Play Again</button>
+      <button class="submit-btn" onclick="location.href='index.html'">Back to Home</button>
+    </section>
+  </main>
+
+  <script src="quiz.js"></script>
+</body>
+</html>
+
