@@ -1,5 +1,3 @@
-`create-room.html`
-
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -9,6 +7,7 @@
   <title>Create Room | AptiQuiz</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <header class="navbar">
     <a href="index.html" class="logo">Apti<span>Quiz</span></a>
@@ -17,13 +16,16 @@
 
   <main class="hero">
     <div class="pill">🎮 MULTIPLAYER ARENA</div>
+
     <h1>Create Your <span>Quiz Room.</span></h1>
+
     <p class="subtitle">
       Set up your quiz and get ready to challenge your friends.
     </p>
 
     <section class="panel">
       <form id="roomForm">
+
         <label for="hostName">Host Name</label>
         <input
           id="hostName"
@@ -39,23 +41,37 @@
           id="quizTitle"
           name="quizTitle"
           type="text"
-          placeholder="e.g. Aptitude Challenge"
+          placeholder="e.g. VLSI Challenge"
           maxlength="60"
           required
         >
 
-        <label for="topic">Choose Topic</label>
+        <label for="topic">Choose Subject / Topic</label>
         <select id="topic" name="topic" required>
+          <option value="CMOS">CMOS</option>
+          <option value="ADSPC">ADSPC</option>
+          <option value="VLSI Technology">VLSI Technology</option>
+          <option value="Verilog HDL">Verilog HDL</option>
+          <option value="Embedded Computing Principles">
+            Embedded Computing Principles
+          </option>
+          <option value="AI and Cyber Ethics">AI and Cyber Ethics</option>
+          <option value="MATLAB">MATLAB</option>
+          <option value="Cadence">Cadence</option>
+          <option value="Vivado">Vivado</option>
+          <option value="Digital Electronics">Digital Electronics</option>
+          <option value="Signals and Systems">Signals and Systems</option>
+          <option value="Microprocessors">Microprocessors</option>
+          <option value="Python Programming">Python Programming</option>
+          <option value="C Programming">C Programming</option>
           <option value="Quantitative Aptitude">Quantitative Aptitude</option>
           <option value="Logical Reasoning">Logical Reasoning</option>
           <option value="Verbal Ability">Verbal Ability</option>
-          <option value="Programming">Programming</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Mixed">Mixed Topics</option>
+          <option value="Mixed">Mixed Subjects</option>
         </select>
 
         <label for="questionCount">Number of Questions</label>
-        <select id="questionCount" name="questionCount">
+        <select id="questionCount" name="questionCount" required>
           <option value="5">5 Questions</option>
           <option value="10" selected>10 Questions</option>
           <option value="15">15 Questions</option>
@@ -63,7 +79,7 @@
         </select>
 
         <label for="questionTime">Time Per Question</label>
-        <select id="questionTime" name="questionTime">
+        <select id="questionTime" name="questionTime" required>
           <option value="10">10 Seconds</option>
           <option value="15" selected>15 Seconds</option>
           <option value="20">20 Seconds</option>
@@ -75,7 +91,9 @@
         </button>
 
         <p id="roomMessage" role="status" aria-live="polite"></p>
+
         <div id="settingsPreview" hidden></div>
+
       </form>
 
       <a href="index.html">← Back to Home</a>
