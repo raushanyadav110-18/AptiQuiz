@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090a08">
+  <title>Live Challenge | AptiQuiz</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090a08;
+      --surface: #12140f;
+      --border: #30352a;
+      --text: #f5f5ef;
+      --muted: #9b9f90;
+      --lime: #c2ff6b;
+      --red: #ff7b7b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(#080a08d9, #080a08ee),
+        url("assets/arena-bg.png") center / cover fixed no-repeat,
+        var(--bg);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .topbar {
+      min-height: 72px;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid #ffffff17;
+      background: #080a08a8;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      color: white;
+      font: 700 25px "Space Grotesk", sans-serif;
+      letter-spacing: -1.5px;
+      text-decoration: none;
+    }
+
+    .brand span { color: var(--lime); }
+
+    .live {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--lime);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--lime);
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: 35px auto 60px;
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .topic-label {
+      color: var(--lime);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .player-label {
+      color: #b4b8a8;
+      font-size: 12px;
+    }
+
+    .player-label strong { color: white; }
+
+    .quiz-card {
+      padding: clamp(22px, 5vw, 42px);
+      background: linear-gradient(145deg, #12150ff5, #0a0c0af5);
+      border: 1px solid #454b37;
+      border-radius: 5px;
+      box-shadow: 0 25px 90px #0009;
+    }
+
+    .question-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .question-number {
+      color: #a9ad9f;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 14px;
+      border: 1px solid #c2ff663b;
+      background: #c2ff660c;
+      color: var(--lime);
+      border-radius: 3px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer.warning {
+      color: var(--red);
+      border-color: #ff7b7b66;
+      background: #ff7b7b0d;
+    }
+
+    .progress-track {
+      height: 5px;
+      overflow: hidden;
+      background: #30332b;
+      margin-bottom: 32px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--lime);
+      transition: width .3s ease;
+    }
+
+    .question-kicker {
+      color: var(--lime);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    .question-text {
+      font: 600 clamp(23px, 4vw, 34px)/1.35 "Space Grotesk", sans-serif;
+      letter-spacing: -.7px;
+      margin: 0 0 29px;
+      overflow-wrap: anywhere;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+    }
+
+    .option {
+      min-height: 70px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      text-align: left;
+      color: #e6e8dd;
+      background: #ffffff04;
+      border: 1px solid #34382f;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: #c2ff6680;
+      background: #c2ff6609;
+      transform: translateY(-1px);
+    }
+
+    .option:focus-visible,
+    .next-button:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 3px;
+    }
+
+    .option:disabled { cursor: default; }
+
+    .option-letter {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border: 1px solid #424638;
+      color: #a9ad9f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .option.selected {
+      border-color: var(--lime);
+      background: #c2ff6615;
+      color: white;
+    }
+
+    .option.selected .option-letter {
+      background: var(--lime);
+      color: #10120b;
+      border-color: var(--lime);
+    }
+
+    .option.correct {
+      border-color: #66e6a0;
+      background: #66e6a014;
+    }
+
+    .option.incorrect {
+      border-color: #ff7b7b;
+      background: #ff7b7b12;
+    }
+
+    .feedback {
+      min-height: 25px;
+      margin-top: 18px;
+      color: #c9cbbf;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .question-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-top: 18px;
+      padding-top: 22px;
+      border-top: 1px solid #ffffff12;
+    }
+
+    .score-label {
+      color: #929686;
+      font-size: 12px;
+    }
+
+    .score-label strong { color: var(--lime); }
+
+    .next-button {
+      min-height: 48px;
+      padding: 13px 20px;
+      background: var(--lime);
+      color: #10120b;
+      border: 0;
+      border-radius: 3px;
+      font-weight: 900;
+      font-size: 12px;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .next-button:hover {
+      background: #d4ffa0;
+      transform: translateY(-2px);
+    }
+
+    .next-button:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result-card {
+      padding: 35px;
+      border: 1px solid #454b37;
+      background: #10130ff5;
+      text-align: center;
+    }
+
+    .result-kicker {
+      color: var(--lime);
+      font-size: 11px;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+
+    .result-score {
+      margin: 20px 0 8px;
+      color: var(--lime);
+      font: 700 64px "Space Grotesk", sans-serif;
+    }
+
+    .result-copy {
+      color: #a9ad9f;
+      line-height: 1.8;
+      margin-bottom: 25px;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .secondary-button {
+      min-height: 46px;
+      padding: 12px 18px;
+      background: transparent;
+      border: 1px solid #454b37;
+      color: white;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .secondary-button:hover { border-color: var(--lime); }
+
+    .disclaimer {
+      margin-top: 20px;
+      color: #858a7b;
+      font-size: 11px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 580px) {
+      .container { margin-top: 24px; }
+      .options { grid-template-columns: 1fr; }
+      .option { min-height: 60px; }
+      .question-footer { align-items: stretch; flex-direction: column; }
+      .next-button { width: 100%; }
+      .question-text { font-size: 25px; }
+      .quiz-card { padding: 22px 17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">Apti<span>Quiz</span></a>
+    <div class="live"><span class="live-dot"></span> LIVE CHALLENGE</div>
+  </header>
+
+  <main class="container">
+    <div class="quiz-meta">
+      <div class="topic-label" id="topicLabel">VLSI CHALLENGE</div>
+      <div class="player-label">Player: <strong id="playerName">Guest</strong></div>
+    </div>
+
+    <section class="quiz-card" id="quizPanel">
+      <div class="question-top">
+        <div class="question-number" id="questionNumber">QUESTION 01 / 05</div>
+        <div class="timer" id="timerBox">⏱ <span id="timer">15</span>s</div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="question-kicker">THINK FAST. CHOOSE WISELY.</div>
+      <h1 class="question-text" id="questionText">Loading question...</h1>
+
+      <div class="options" id="options"></div>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+
+      <div class="question-footer">
+        <div class="score-label">Correct answers: <strong id="score">0</strong></div>
+        <button class="next-button" id="nextButton" disabled>Choose an answer</button>
+      </div>
+    </section>
+
+    <section class="result-card" id="resultPanel" hidden>
+      <div class="result-kicker">CHALLENGE COMPLETED</div>
+      <h2 class="result-score" id="finalScore">0 / 5</h2>
+      <p class="result-copy" id="finalMessage"></p>
+      <div class="result-actions">
+        <button class="next-button" id="leaderboardButton">View Leaderboard →</button>
+        <button class="secondary-button" id="homeButton">Back to Home</button>
+      </div>
+    </section>
+
+    <p class="disclaimer">
+      FRONTEND DEMO · Scores are calculated locally in this preview.
+      Official multiplayer scoring requires the server backend.
+    </p>
+  </main>
+
+  <script>
+    const demoQuestions = [
+      {
+        topic: "CMOS",
+        question: "Which MOSFET type is commonly used to pull the output HIGH in a CMOS inverter?",
+        options: ["NMOS", "PMOS", "BJT", "JFET"],
+        answer: 1
+      },
+      {
+        topic: "Verilog HDL",
+        question: "Which keyword declares a module in Verilog HDL?",
+        options: ["class", "function", "module", "entity"],
+        answer: 2
+      },
+      {
+        topic: "Digital Electronics",
+        question: "What is the output of an AND gate when both inputs are 1?",
+        options: ["0", "1", "Z", "X"],
+        answer: 1
+      },
+      {
+        topic: "VLSI Technology",
+        question: "What does lithography help define during IC fabrication?",
+        options: ["Chip patterns", "Clock frequency", "Source code", "Supply voltage"],
+        answer: 0
+      },
+      {
+        topic: "ADSPC",
+        question: "What does DFT commonly stand for in digital signal processing?",
+        options: [
+          "Digital Fourier Transform",
+          "Discrete Fourier Transform",
+          "Direct Frequency Control",
+          "Discrete Filter Circuit"
+        ],
+        answer: 1
+      }
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    let settings = {};
+
+    try {
+      settings = JSON.parse(sessionStorage.getItem("aptiRoomSettings") || "{}");
+    } catch {
+      settings = {};
+    }
+
+    const playerName =
+      sessionStorage.getItem("aptiJoinPlayerName") ||
+      settings.hostName ||
+      sessionStorage.getItem("aptiQuizName") ||
+      "Guest";
+
+    const selectedTopic =
+      settings.topic ||
+      sessionStorage.getItem("aptiQuizTopic") ||
+      "Mixed";
+
+    const desiredCount = Math.max(
+      1,
+      Math.min(Number(settings.questionCount) || 5, demoQuestions.length)
+    );
+
+    const questionTime = Math.max(
+      5,
+      Math.min(Number(settings.questionTime) || 15, 120)
+    );
+
+    let questions = demoQuestions.filter(q =>
+      selectedTopic === "Mixed" || q.topic === selectedTopic
+    );
+
+    if (questions.length === 0) {
+      questions = demoQuestions.slice();
+    }
+
+    questions = questions.slice(0, desiredCount);
+
+    let current = 0;
+    let score = 0;
+    let timeLeft = questionTime;
+    let timerId = null;
+    let answered = false;
+    let totalElapsed = 0;
+    let questionStartedAt = Date.now();
+
+    const $ = id => document.getElementById(id);
+
+    $("playerName").textContent = playerName;
+    $("topicLabel").textContent = selectedTopic.toUpperCase();
+
+    function renderQuestion() {
+      clearInterval(timerId);
+      answered = false;
+      timeLeft = questionTime;
+      questionStartedAt = Date.now();
+
+      const q = questions[current];
+
+      $("questionNumber").textContent =
+        `QUESTION ${String(current + 1).padStart(2, "0")} / ${String(questions.length).padStart(2, "0")}`;
+
+      $("questionText").textContent = q.question;
+      $("timer").textContent = timeLeft;
+      $("timerBox").classList.remove("warning");
+      $("progressFill").style.width =
+        `${(current / questions.length) * 100}%`;
+      $("feedback").textContent = "";
+      $("nextButton").disabled = true;
+      $("nextButton").textContent = "Choose an answer";
+      $("options").replaceChildren();
+
+      q.options.forEach((text, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option";
+
+        const letter = document.createElement("span");
+        letter.className = "option-letter";
+        letter.textContent = String.fromCharCode(65 + index);
+
+        const label = document.createElement("span");
+        label.textContent = text;
+
+        button.append(letter, label);
+        button.addEventListener("click", () => chooseAnswer(index));
+        $("options").appendChild(button);
+      });
+
+      timerId = setInterval(() => {
+        timeLeft--;
+        $("timer").textContent = timeLeft;
+
+        if (timeLeft <= 5) {
+          $("timerBox").classList.add("warning");
+        }
+
+        if (timeLeft <= 0) {
+          finishQuestion(null);
+        }
+      }, 1000);
+    }
+
+    function chooseAnswer(index) {
+      if (answered) return;
+      finishQuestion(index);
+    }
+
+    function finishQuestion(selectedIndex) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerId);
+
+      totalElapsed += Math.max(0, (Date.now() - questionStartedAt) / 1000);
+
+      const q = questions[current];
+      const buttons = $("options").querySelectorAll("button");
+
+      buttons.forEach(button => button.disabled = true);
+
+      if (selectedIndex === q.answer) {
+        score++;
+        $("feedback").textContent = "Correct! Excellent work.";
+      } else if (selectedIndex === null) {
+        $("feedback").textContent =
+          `Time is up. Correct answer: ${q.options[q.answer]}`;
+      } else {
+        $("feedback").textContent =
+          `Not quite. Correct answer: ${q.options[q.answer]}`;
+      }
+
+      buttons[q.answer].classList.add("correct");
+
+      if (selectedIndex !== null && selectedIndex !== q.answer) {
+        buttons[selectedIndex].classList.add("incorrect");
+      }
+
+      $("score").textContent = score;
+      $("progressFill").style.width =
+        `${((current + 1) / questions.length) * 100}%`;
+
+      $("nextButton").disabled = false;
+      $("nextButton").textContent =
+        current === questions.length - 1 ? "Finish Challenge →" : "Next Question →";
+    }
+
+    function finishQuiz() {
+      clearInterval(timerId);
+      $("quizPanel").hidden = true;
+      $("resultPanel").hidden = false;
+
+      $("finalScore").textContent = `${score} / ${questions.length}`;
+      $("finalMessage").textContent =
+        `${playerName}, you answered ${score} out of ${questions.length} questions correctly. ` +
+        `Demo completion time: ${Math.round(totalElapsed)} seconds.`;
+
+      sessionStorage.setItem("aptiDemoScore", String(score));
+      sessionStorage.setItem("aptiDemoCorrect", String(score));
+      sessionStorage.setItem("aptiDemoTotal", String(questions.length));
+      sessionStorage.setItem("aptiDemoTime", String(Math.round(totalElapsed)));
+      sessionStorage.setItem("aptiDemoPlayer", playerName);
+    }
+
+    $("nextButton").addEventListener("click", () => {
+      if (!answered) return;
+
+      current++;
+
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    });
+
+    $("leaderboardButton").addEventListener("click", () => {
+      window.location.href = "leaderboard.html";
+    });
+
+    $("homeButton").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
