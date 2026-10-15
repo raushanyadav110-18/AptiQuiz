@@ -1,229 +1,78 @@
 
-const express = require("express");
-const cors = require("cors");
-const { initializeApp, cert } = require("firebase-admin/app");
-const { getDatabase } = require("firebase-admin/database");
+const joinRoomForm = document.getElementById("joinRoomForm");
+const playerNameInput = document.getElementById("playerName");
+const roomCodeInput = document.getElementById("roomCode");
+const joinMessage = document.getElementById("joinMessage");
+const joinButton = joinRoomForm.querySelector('button[type="submit"]');
 
-const app = express();
-const PORT = 3000;
-
-app.use(express.json());
-app.use(cors());
-
-// Firebase configuration
-const serviceAccount = require("./serviceAccountKey.json");
-
-initializeApp({
-  credential: cert(serviceAccount),
-  databaseURL:
-    "https://aptiquiz-63d21-default-rtdb.asia-southeast1.firebasedatabase.app",
+// Keep room code uppercase.
+roomCodeInput.addEventListener("input", function () {
+  roomCodeInput.value = roomCodeInput.value
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, 6)
+    .toUpperCase();
 });
 
-const db = getDatabase();
+joinRoomForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-// Home route
-app.get("/", (req, res) => {
-  res.json({
-    message: "AptiQuiz Backend is running!",
-    status: "success",
-  });
-});
+  const playerName = playerNameInput.value.trim();
+  const roomCode = roomCodeInput.value.trim().toUpperCase();
 
-// Firebase connection test
-app.get("/api/firebase-test", async (req, res) => {
-  try {
-    await db.ref("/").get();
-
-    res.json({
-      message: "Firebase connected successfully!",
-      status: "success",
-    });
-  } catch (error) {
-    console.error("Firebase connection failed:", error.message);
-
-    res.status(500).json({
-      message: "Firebase connection failed",
-      status: "error",
-    });
+  if (playerName.length < 2) {
+    joinMessage.textContent =
+      "Please enter a name with at least 2 characters.";
+    return;
   }
-});
 
-// Start server
-
- // Create a new quiz room
-
- // Create a new quiz room
-app.post("/api/rooms", async (req, res) => {
-  try {
-    const {
-      hostName,
-      quizTitle,
-      topic,
-      questionCount,
-      questionTime
-    } = req.body;
-
-    if (typeof hostName !== "string" || !hostName.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "Host name is required",
-      });
-    }
-
-    if (
-      typeof quizTitle !== "string" ||
-      !quizTitle.trim() ||
-      typeof topic !== "string" ||
-      !topic.trim()
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Quiz title and topic are required",
-      });
-    }
-
-    const count = Number(questionCount);
-    const time = Number(questionTime);
-
-    if (
-      !Number.isInteger(count) || count < 1 || count > 50 ||
-      !Number.isInteger(time) || time < 5 || time > 120
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid question count or question time",
-      });
-    }
-
-    let roomCode;
-    let roomRef;
-    let exists = true;
-
-    while (exists) {
-      roomCode = Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase();
-
-      roomRef = db.ref(`rooms/${roomCode}`);
-      const snapshot = await roomRef.get();
-      exists = snapshot.exists();
-    }
-
-    await roomRef.set({
-      roomCode,
-      hostName: hostName.trim(),
-      quizTitle: quizTitle.trim(),
-      topic: topic.trim(),
-      questionCount: count,
-      questionTime: time,
-      status: "waiting",
-      players: {},
-      createdAt: Date.now(),
-    });
-
-    return res.status(201).json({
-      success: true,
-      roomCode,
-      message: "Room created successfully",
-    });
-  } catch (error) {
-    console.error("Create room error:", error.message);
-
-    return res.status(500).json({
-      success: false,
-      message: "Could not create room",
-    });
+  if (!/^[A-Z0-9]{6}$/.test(roomCode)) {
+    joinMessage.textContent =
+      "Room code must contain exactly 6 letters or numbers.";
+    return;
   }
-});
 
+  joinButton.disabled = true;
+  joinMessage.style.color = "#c5baff";
+  joinMessage.textContent = "Joining room...";
 
-
-app.post("/api/rooms/:roomCode/join", async (req, res) => {
   try {
-    const roomCode = req.params.roomCode.trim().toUpperCase();
-    const { playerName } = req.body;
-
-    if (
-      typeof playerName !== "string" ||
-      !playerName.trim() ||
-      playerName.trim().length > 30
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Enter a player name (1–30 characters)",
-      });
-    }
-
-    const roomRef = db.ref(`rooms/${roomCode}`);
-    const roomSnapshot = await roomRef.get();
-
-    if (!roomSnapshot.exists()) {
-      return res.status(404).json({
-        success: false,
-        message: "Room not found",
-      });
-    }
-
-    const room = roomSnapshot.val();
-
-    if (room.status !== "waiting") {
-      return res.status(400).json({
-        success: false,
-        message: "Room is not accepting players",
-      });
-    }
-
-    const players = room.players || {};
-
-    if (Object.keys(players).length >= 50) {
-      return res.status(400).json({
-        success: false,
-        message: "Room is full",
-      });
-    }
-
-    const normalizedName = playerName.trim().toLowerCase();
-
-    const duplicate = Object.values(players).some(
-      (player) =>
-        player.name.trim().toLowerCase() === normalizedName
+    const response = await fetch(
+      `http://localhost:3000/api/rooms/${encodeURIComponent(roomCode)}/join`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ playerName })
+      }
     );
 
-    if (duplicate) {
-      return res.status(409).json({
-        success: false,
-        message: "This player name is already taken",
-      });
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Could not join room.");
     }
 
-    const playerRef = roomRef.child("players").push();
+    sessionStorage.setItem("aptiJoinPlayerName", playerName);
+    sessionStorage.setItem("aptiJoinRoomCode", roomCode);
+    sessionStorage.setItem("aptiPlayerId", result.playerId);
 
-    await playerRef.set({
-      name: playerName.trim(),
-      score: 0,
-      correct: 0,
-      wrong: 0,
-      unanswered: 0,
-      joinedAt: Date.now(),
-    });
+    joinMessage.style.color = "#86efac";
+    joinMessage.textContent = "Room joined successfully!";
 
-    return res.status(201).json({
-      success: true,
-      roomCode,
-      playerId: playerRef.key,
-      playerName: playerName.trim(),
-      message: "Joined room successfully",
-    });
+    window.location.href =
+      "waiting-room.html?roomCode=" + encodeURIComponent(roomCode);
+
   } catch (error) {
-    console.error("Join room error:", error.message);
+    console.error("Join room error:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Could not join room",
-    });
+    joinMessage.style.color = "#ff9baf";
+    joinMessage.textContent =
+      error.message === "Failed to fetch"
+        ? "Cannot connect to backend. Check that the server is running."
+        : error.message;
+
+  } finally {
+    joinButton.disabled = false;
   }
-});
-app.listen(PORT, () => {
-  console.log(`AptiQuiz backend running at http://localhost:${PORT}`);
 });
