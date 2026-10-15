@@ -1,78 +1,292 @@
 
-const joinRoomForm = document.getElementById("joinRoomForm");
-const playerNameInput = document.getElementById("playerName");
-const roomCodeInput = document.getElementById("roomCode");
-const joinMessage = document.getElementById("joinMessage");
-const joinButton = joinRoomForm.querySelector('button[type="submit"]');
+const express = require("express");
+const cors = require("cors");
+const admin = require("firebase-admin");
+const crypto = require("crypto");
+const path = require("path");
 
-// Keep room code uppercase.
-roomCodeInput.addEventListener("input", function () {
-  roomCodeInput.value = roomCodeInput.value
-    .replace(/[^a-zA-Z0-9]/g, "")
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+const corsOptions = {
+  origin: [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500"
+  ],
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+
+// Initialize Firebase Admin
+if (!admin.apps.length) {
+  const serviceAccountPath = path.join(
+    __dirname,
+    "serviceAccountKey.json"
+  );
+
+  const serviceAccount = require(serviceAccountPath);
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL:
+      "https://aptiquiz-63d21-default-rtdb.asia-southeast1.firebasedatabase.app"
+  });
+}
+
+const db = admin.database();
+const roomsRef = db.ref("rooms");
+
+// Generate a unique 6-character room code.
+function generateRoomCode() {
+  return crypto
+    .randomBytes(4)
+    .toString("hex")
     .slice(0, 6)
     .toUpperCase();
+}
+
+// Health check
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "AptiQuiz backend running at http://localhost:3000"
+  });
 });
 
-joinRoomForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  const playerName = playerNameInput.value.trim();
-  const roomCode = roomCodeInput.value.trim().toUpperCase();
-
-  if (playerName.length < 2) {
-    joinMessage.textContent =
-      "Please enter a name with at least 2 characters.";
-    return;
-  }
-
-  if (!/^[A-Z0-9]{6}$/.test(roomCode)) {
-    joinMessage.textContent =
-      "Room code must contain exactly 6 letters or numbers.";
-    return;
-  }
-
-  joinButton.disabled = true;
-  joinMessage.style.color = "#c5baff";
-  joinMessage.textContent = "Joining room...";
-
+// Firebase connection test
+app.get("/api/firebase-test", async (req, res) => {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/rooms/${encodeURIComponent(roomCode)}/join`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ playerName })
-      }
-    );
+    await db.ref(".info/connected").once("value");
 
-    const result = await response.json();
+    res.json({
+      success: true,
+      message: "Firebase Admin initialized successfully"
+    });
+  } catch (error) {
+    console.error("Firebase test error:", error);
 
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Could not join room.");
+    res.status(500).json({
+      success: false,
+      message: "Firebase connection test failed"
+    });
+  }
+});
+
+// Create a room
+app.post("/api/rooms", async (req, res) => {
+  try {
+    const {
+      hostName,
+      quizTitle,
+      topic,
+      questionCount,
+      questionTime
+    } = req.body;
+
+    if (
+      typeof hostName !== "string" ||
+      !hostName.trim() ||
+      typeof quizTitle !== "string" ||
+      !quizTitle.trim() ||
+      typeof topic !== "string" ||
+      !topic.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Host name, quiz title and topic are required."
+      });
     }
 
-    sessionStorage.setItem("aptiJoinPlayerName", playerName);
-    sessionStorage.setItem("aptiJoinRoomCode", roomCode);
-    sessionStorage.setItem("aptiPlayerId", result.playerId);
+    const count = Number(questionCount);
+    const time = Number(questionTime);
 
-    joinMessage.style.color = "#86efac";
-    joinMessage.textContent = "Room joined successfully!";
+    if (
+      !Number.isInteger(count) ||
+      count < 1 ||
+      count > 50 ||
+      !Number.isInteger(time) ||
+      time < 5 ||
+      time > 120
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Question count must be 1-50 and time must be 5-120 seconds."
+      });
+    }
 
-    window.location.href =
-      "waiting-room.html?roomCode=" + encodeURIComponent(roomCode);
+    let roomCode;
+    let roomRef;
+    let created = false;
 
+    for (let attempt = 0; attempt < 10; attempt++) {
+      roomCode = generateRoomCode();
+      roomRef = roomsRef.child(roomCode);
+
+      const result = await roomRef.transaction(
+        currentData => {
+          if (currentData !== null) {
+            return;
+          }
+
+          return {
+            roomCode,
+            hostName: hostName.trim(),
+            quizTitle: quizTitle.trim(),
+            topic: topic.trim(),
+            questionCount: count,
+            questionTime: time,
+            status: "waiting",
+            players: {},
+            createdAt: admin.database.ServerValue.TIMESTAMP
+          };
+        },
+        undefined,
+        false
+      );
+
+      if (result.committed) {
+        created = true;
+        break;
+      }
+    }
+
+    if (!created) {
+      return res.status(500).json({
+        success: false,
+        message: "Could not generate a unique room code. Try again."
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      roomCode
+    });
+  } catch (error) {
+    console.error("Create room error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Could not create room."
+    });
+  }
+});
+
+// Join an existing room
+app.post("/api/rooms/:roomCode/join", async (req, res) => {
+  try {
+    const roomCode = String(req.params.roomCode || "")
+      .trim()
+      .toUpperCase();
+
+    const playerName =
+      typeof req.body.playerName === "string"
+        ? req.body.playerName.trim()
+        : "";
+
+    if (!/^[A-F0-9]{6}$/.test(roomCode)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid room code."
+      });
+    }
+
+    if (playerName.length < 2 || playerName.length > 30) {
+      return res.status(400).json({
+        success: false,
+        message: "Player name must be 2-30 characters."
+      });
+    }
+
+    const roomRef = roomsRef.child(roomCode);
+    const snapshot = await roomRef.get();
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({
+        success: false,
+        message: "Room not found. Check the room code."
+      });
+    }
+
+    const room = snapshot.val();
+
+    if (room.status !== "waiting") {
+      return res.status(409).json({
+        success: false,
+        message: "This room is no longer accepting players."
+      });
+    }
+
+    const players = room.players || {};
+    const playerNames = Object.values(players).map(player =>
+      String(player.playerName || "").toLowerCase()
+    );
+
+    if (playerNames.includes(playerName.toLowerCase())) {
+      return res.status(409).json({
+        success: false,
+        message: "This player name is already in the room."
+      });
+    }
+
+    if (Object.keys(players).length >= 50) {
+      return res.status(409).json({
+        success: false,
+        message: "This room is full."
+      });
+    }
+
+    const playerRef = roomRef.child("players").push();
+    const playerId = playerRef.key;
+
+    await playerRef.set({
+      playerId,
+      playerName,
+      joinedAt: admin.database.ServerValue.TIMESTAMP,
+      score: 0
+    });
+
+    return res.json({
+      success: true,
+      roomCode,
+      playerId,
+      playerName,
+      message: "Joined room successfully."
+    });
   } catch (error) {
     console.error("Join room error:", error);
 
-    joinMessage.style.color = "#ff9baf";
-    joinMessage.textContent =
-      error.message === "Failed to fetch"
-        ? "Cannot connect to backend. Check that the server is running."
-        : error.message;
-
-  } finally {
-    joinButton.disabled = false;
+    return res.status(500).json({
+      success: false,
+      message: "Could not join room. Please try again."
+    });
   }
+});
+
+// Handle invalid routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API route not found."
+  });
+});
+
+// General error handler
+app.use((error, req, res, next) => {
+  console.error("Server error:", error);
+
+  if (res.headersSent) {
+    return next(error);
+  }
+
+  res.status(500).json({
+    success: false,
+    message: "Internal server error."
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`AptiQuiz backend running at http://localhost:${PORT}`);
 });
